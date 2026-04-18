@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smoove Films</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --green: #2d8a3e;
+    --green-bright: #4ecf64;
+    --green-dark: #1a5c28;
+    --black: #0a0a0a;
+    --dark: #111;
+    --card-bg: #161616;
+    --text: #f0f0f0;
+    --muted: #888;
+    --border: rgba(46,138,62,0.3);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--black);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 70px;
+  }
+  .nav-logo img { height: 52px; }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none;
+    font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--green-bright); }
+  .nav-cta {
+    background: var(--green); color: #fff;
+    border: none; padding: 10px 24px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; cursor: pointer;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--green-bright); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 100px 40px 60px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(46,138,62,0.12) 0%, transparent 70%),
+                linear-gradient(180deg, #0a0a0a 0%, #0d1a0f 50%, #0a0a0a 100%);
+  }
+  .hero-lines {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: repeating-linear-gradient(
+      0deg, transparent, transparent 59px,
+      rgba(46,138,62,0.06) 60px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 59px,
+      rgba(46,138,62,0.06) 60px
+    );
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 900px; }
+  .hero-eyebrow {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--green-bright); margin-bottom: 24px;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: ''; width: 40px; height: 1px; background: var(--green-bright);
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 10vw, 130px);
+    line-height: 0.9; letter-spacing: 2px;
+    color: #fff; margin-bottom: 8px;
+  }
+  .hero h1 span { color: var(--green-bright); }
+  .hero-sub {
+    font-size: 13px; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 32px;
+  }
+  .hero-desc {
+    font-size: 16px; font-weight: 300; color: #bbb; line-height: 1.8;
+    max-width: 560px; margin: 0 auto 48px;
+  }
+  .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--green); color: #fff;
+    border: none; padding: 16px 40px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { background: var(--green-bright); transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent; color: #fff;
+    border: 1px solid rgba(255,255,255,0.3); padding: 16px 40px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--green-bright); color: var(--green-bright); }
+  .hero-scroll {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px; height: 40px; background: linear-gradient(to bottom, var(--green), transparent);
+    animation: scrollPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes scrollPulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+  /* SECTION COMMON */
+  section { padding: 100px 40px; }
+  .section-label {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--green-bright); margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1; color: #fff; margin-bottom: 24px;
+  }
+  .section-title span { color: var(--green-bright); }
+  .divider {
+    width: 60px; height: 3px; background: var(--green);
+    margin-bottom: 48px;
+  }
+
+  /* STATS BAR */
+  .stats {
+    background: var(--green-dark);
+    padding: 48px 40px;
+    display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+  }
+  .stat {
+    text-align: center; padding: 0 60px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px; color: #fff; line-height: 1;
+  }
+  .stat-num span { color: var(--green-bright); }
+  .stat-label {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.6); margin-top: 6px;
+  }
+
+  /* SERVICES */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px; max-width: 1200px; margin: 0 auto;
+  }
+  .service-card {
+    background: var(--card-bg);
+    padding: 48px 36px;
+    position: relative; overflow: hidden;
+    transition: transform 0.3s;
+  }
+  .service-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--green); transform: scaleX(0);
+    transform-origin: left; transition: transform 0.3s;
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-card:hover { transform: translateY(-4px); }
+  .service-icon {
+    font-size: 36px; margin-bottom: 24px; display: block;
+  }
+  .service-num {
+    position: absolute; top: 24px; right: 24px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px; color: rgba(46,138,62,0.08); line-height: 1;
+  }
+  .service-card h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 1px; color: #fff; margin-bottom: 12px;
+  }
+  .service-card p { font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 24px; }
+  .service-price {
+    font-size: 13px; font-weight: 700; color: var(--green-bright);
+    letter-spacing: 1px;
+  }
+
+  /* GALLERY */
+  .gallery-section { background: #0d0d0d; }
+  .gallery-filter {
+    display: flex; gap: 4px; margin-bottom: 40px; flex-wrap: wrap;
+  }
+  .filter-btn {
+    background: transparent; color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 8px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--green); color: #fff; border-color: var(--green);
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px; max-width: 1200px; margin: 0 auto;
+  }
+  .gallery-item {
+    position: relative; overflow: hidden;
+    background: var(--card-bg);
+    aspect-ratio: 4/3;
+  }
+  .gallery-item:first-child { grid-column: span 2; aspect-ratio: 16/7; }
+  .gallery-item:nth-child(5) { grid-column: span 2; }
+  .gallery-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 8px;
+  }
+  .gallery-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; color: rgba(46,138,62,0.4); letter-spacing: 2px;
+  }
+  .gallery-sub { font-size: 11px; color: rgba(255,255,255,0.2); letter-spacing: 1px; }
+  .gallery-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.3s;
+    display: flex; align-items: flex-end; padding: 20px;
+  }
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+  .gallery-overlay-text {
+    font-size: 12px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: #fff;
+  }
+
+  /* ABOUT */
+  .about-inner {
+    display: flex; gap: 80px; align-items: center;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .about-visual {
+    flex: 0 0 420px; position: relative;
+  }
+  .about-img-frame {
+    width: 100%; height: 500px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .about-img-frame::before {
+    content: ''; position: absolute;
+    top: 16px; left: 16px; right: -16px; bottom: -16px;
+    border: 1px solid var(--green); z-index: -1;
+  }
+  .about-logo-large { width: 60%; opacity: 0.15; }
+  .about-tag {
+    position: absolute; bottom: -20px; right: -20px;
+    background: var(--green); padding: 20px 24px;
+    text-align: center;
+  }
+  .about-tag-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; color: #fff; line-height: 1;
+  }
+  .about-tag-label {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
+  }
+  .about-content { flex: 1; }
+  .about-content p {
+    font-size: 15px; color: #aaa; line-height: 1.9;
+    margin-bottom: 20px;
+  }
+  .about-feats { margin: 32px 0; display: flex; flex-direction: column; gap: 16px; }
+  .about-feat { display: flex; align-items: center; gap: 16px; }
+  .feat-dot { width: 8px; height: 8px; background: var(--green-bright); flex-shrink: 0; }
+  .feat-text { font-size: 14px; color: #ccc; font-weight: 600; letter-spacing: 0.5px; }
+
+  /* PRICING */
+  .pricing-section { background: #0d0d0d; }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2px; max-width: 1100px; margin: 0 auto;
+  }
+  .pricing-card {
+    background: var(--card-bg);
+    padding: 48px 36px;
+    position: relative;
+    transition: transform 0.3s;
+  }
+  .pricing-card.featured {
+    background: var(--green-dark);
+    transform: scale(1.02);
+  }
+  .pricing-badge {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    background: var(--green-bright); color: #0a0a0a;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    padding: 4px 20px;
+  }
+  .pricing-tier {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--green-bright); margin-bottom: 16px;
+  }
+  .pricing-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px; color: #fff; line-height: 1;
+    margin-bottom: 4px;
+  }
+  .pricing-price sup { font-size: 28px; vertical-align: super; }
+  .pricing-desc { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+  .pricing-features { list-style: none; margin-bottom: 40px; }
+  .pricing-features li {
+    font-size: 14px; color: #ccc; padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .pricing-features li::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--green-bright); flex-shrink: 0;
+  }
+  .btn-book {
+    width: 100%; background: var(--green); color: #fff;
+    border: none; padding: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .btn-book:hover { background: var(--green-bright); color: #0a0a0a; }
+  .btn-book.outline {
+    background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff;
+  }
+  .btn-book.outline:hover { border-color: var(--green-bright); background: transparent; color: var(--green-bright); }
+
+  /* CONTACT */
+  .contact-inner {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; max-width: 1200px; margin: 0 auto;
+  }
+  .contact-info p { font-size: 15px; color: #aaa; line-height: 1.9; margin-bottom: 40px; }
+  .contact-detail { display: flex; flex-direction: column; gap: 20px; }
+  .contact-item { display: flex; gap: 16px; align-items: flex-start; }
+  .contact-icon {
+    width: 40px; height: 40px; background: var(--card-bg);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .contact-item-label { color: var(--muted); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .contact-item-val { color: #ccc; font-size: 14px; }
+  .contact-form { display: flex; flex-direction: column; gap: 16px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; padding: 14px 16px;
+    font-family: 'Montserrat', sans-serif; font-size: 14px;
+    outline: none; transition: border-color 0.2s;
+    resize: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--green);
+  }
+  .form-group select option { background: #1a1a1a; }
+  .btn-submit {
+    background: var(--green); color: #fff; border: none;
+    padding: 18px; font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  }
+  .btn-submit:hover { background: var(--green-bright); color: #0a0a0a; }
+
+  /* FOOTER */
+  footer {
+    background: #080808;
+    border-top: 1px solid var(--border);
+    padding: 48px 40px 32px;
+    text-align: center;
+  }
+  .footer-logo img { height: 60px; margin-bottom: 24px; }
+  .footer-links { display: flex; gap: 32px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 12px; letter-spacing: 1px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--green-bright); }
+  .footer-copy { font-size: 12px; color: #444; }
+  .footer-copy span { color: var(--green); }
+
+  /* REEL SECTION */
+  .reel-section { background: var(--black); text-align: center; }
+  .reel-wrapper {
+    max-width: 900px; margin: 0 auto;
+    position: relative; padding-bottom: 50.625%; height: 0; overflow: hidden;
+    border: 2px solid var(--border);
+  }
+  .reel-wrapper iframe {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; border: none;
+  }
+  .reel-placeholder {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--card-bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  }
+  .reel-play {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; cursor: pointer;
+  }
+  .reel-placeholder-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 2px; color: var(--muted);
+  }
+  .reel-placeholder-sub { font-size: 12px; color: #444; letter-spacing: 1px; }
+
+  /* FORM SUCCESS */
+  .form-success {
+    display: none; background: var(--green-dark);
+    border: 1px solid var(--green);
+    padding: 24px; text-align: center;
+    font-size: 15px; color: #fff; line-height: 1.7;
+  }
+  .form-success span { color: var(--green-bright); font-weight: 700; }
+
+  /* ANIMATE IN */
+  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s, transform 0.7s; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .stats { padding: 32px 20px; }
+    .stat { padding: 0 24px; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+    .gallery-item:first-child { grid-column: span 2; }
+    .gallery-item:nth-child(5) { grid-column: span 1; }
+    .about-inner { flex-direction: column; gap: 40px; }
+    .about-visual { flex: none; width: 100%; }
+    .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <!-- REPLACE src with your logo path or hosted URL -->
+    <img src="SmooveFilms_Logo_Refined.JPEG" alt="Smoove Films">
+  </div>
+  <ul class="nav-links">
+    <li><a href="#gallery">Work</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Book Now</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Wedding &amp; Event Specialists</div>
+    <h1>SMOOVE<br><span>FILMS</span></h1>
+    <div class="hero-sub">Videographer &nbsp;✦&nbsp; Photographer</div>
+    <p class="hero-desc">
+      We capture the moments that matter most — your wedding, your story, your legacy.
+      Cinematic quality that moves you, every frame.
+    </p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">View Our Work</button>
+      <button class="btn-outline" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get a Quote</button>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">500<span>+</span></div>
+    <div class="stat-label">Events Filmed</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">8<span>+</span></div>
+    <div class="stat-label">Years Experience</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">100<span>%</span></div>
+    <div class="stat-label">5-Star Reviews</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">50<span>+</span></div>
+    <div class="stat-label">Venues Covered</div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<section class="gallery-section" id="gallery">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label fade-up">Our Work</div>
+    <div class="section-title fade-up">MOMENTS <span>CAPTURED</span></div>
+    <div class="divider fade-up"></div>
+    <div class="gallery-filter fade-up">
+      <button class="filter-btn active">All</button>
+      <button class="filter-btn">Weddings</button>
+      <button class="filter-btn">Events</button>
+      <button class="filter-btn">Portraits</button>
+      <button class="filter-btn">Video</button>
+    </div>
+    <div class="gallery-grid fade-up">
+      <!-- REPLACE background-image with your actual photos: style="background-image:url('your-photo.jpg');background-size:cover;background-position:center;" -->
+      <div class="gallery-item" style="background: linear-gradient(135deg, #0d1a0f, #1a3d1f);">
+        <div class="gallery-placeholder">
+          <div class="gallery-label">FEATURED WEDDING</div>
+          <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
+        </div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">The Johnson Wedding — 2024</div></div>
+      </div>
+      <div class="gallery-item" style="background: linear-gradient(135deg, #0f1a11, #162b1a);">
+        <div class="gallery-placeholder">
+          <div class="gallery-label">PORTRAIT</div>
+          <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
+        </div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Bridal Portraits</div></div>
+      </div>
+      <div class="gallery-item" style="background: linear-gradient(135deg, #0a1a0c, #1f4025);">
+        <div class="gallery-placeholder">
+          <div class="gallery-label">CEREMONY</div>
+          <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
+        </div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Ceremony Highlights</div></div>
+      </div>
+      <div class="gallery-item" style="background: linear-gradient(135deg, #0d1f0f, #163820);">
+        <div class="gallery-placeholder">
+          <div class="gallery-label">RECEPTION</div>
+          <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
+        </div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Reception Vibes</div></div>
+      </div>
+      <div class="gallery-item" style="background: linear-gradient(135deg, #0a1a0c, #1a3020);">
+        <div class="gallery-placeholder">
+          <div class="gallery-label">CINEMATIC REEL</div>
+          <div class="gallery-sub">ADD YOUR VIDEO THUMBNAIL HERE</div>
+        </div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Watch Highlight Reel</div></div>
+      </div>
+      <div class="gallery-item" style="background: linear-gradient(135deg, #111f13, #1a3520);">
+        <div class="gallery-placeholder">
+          <div class="gallery-label">DETAILS</div>
+          <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
+        </div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">The Little Details</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHT REEL -->
+<section class="reel-section" id="reel">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label fade-up">Watch Our Work</div>
+    <div class="section-title fade-up">HIGHLIGHT <span>REEL</span></div>
+    <div class="divider fade-up" style="margin:0 auto 48px;"></div>
+    <div class="reel-wrapper fade-up">
+      <!--
+        TO ADD YOUR VIDEO:
+        1. Go to your YouTube video
+        2. Click Share, then Embed, then copy the src URL
+        3. Replace the placeholder div below with:
+           <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" allowfullscreen></iframe>
+      -->
+      <div class="reel-placeholder">
+        <div class="reel-play">&#9654;</div>
+        <div class="reel-placeholder-text">YOUR HIGHLIGHT REEL GOES HERE</div>
+        <div class="reel-placeholder-sub">Paste your YouTube embed URL to activate</div>
+      </div>
+    </div>
+    <p style="margin-top:24px;font-size:13px;color:var(--muted);">
+      Follow us on Instagram <span style="color:var(--green-bright);">@smoovefilms</span> for behind-the-scenes &amp; latest work
+    </p>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label fade-up">What We Offer</div>
+    <div class="section-title fade-up">OUR <span>SERVICES</span></div>
+    <div class="divider fade-up"></div>
+    <div class="services-grid">
+      <div class="service-card fade-up">
+        <span class="service-icon">🎬</span>
+        <span class="service-num">01</span>
+        <h3>Wedding Videography</h3>
+        <p>Full-day cinematic coverage of your wedding from preparation to reception. Delivered as a highlight film and full ceremony edit.</p>
+        <div class="service-price">Starting at $1,500</div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-icon">📷</span>
+        <span class="service-num">02</span>
+        <h3>Wedding Photography</h3>
+        <p>Professional photography capturing every emotion, detail, and candid moment. Delivered as a curated gallery of high-resolution images.</p>
+        <div class="service-price">Starting at $1,200</div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-icon">💍</span>
+        <span class="service-num">03</span>
+        <h3>Photo + Video Bundle</h3>
+        <p>Get the complete package — both photo and video coverage at a discounted rate. The ultimate way to preserve your day.</p>
+        <div class="service-price">Starting at $2,400</div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-icon">🎉</span>
+        <span class="service-num">04</span>
+        <h3>Event Coverage</h3>
+        <p>Corporate events, birthday celebrations, graduations, and more. We bring the same cinematic energy to every occasion.</p>
+        <div class="service-price">Starting at $800</div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-icon">💏</span>
+        <span class="service-num">05</span>
+        <h3>Engagement Sessions</h3>
+        <p>Relaxed, romantic photo sessions for couples. Perfect for save-the-dates, social media, or just a beautiful memory.</p>
+        <div class="service-price">Starting at $400</div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-icon">✈️</span>
+        <span class="service-num">06</span>
+        <h3>Destination Weddings</h3>
+        <p>We travel wherever your love takes you. Destination wedding coverage available nationwide and internationally.</p>
+        <div class="service-price">Custom Quote</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner fade-up">
+    <div class="about-visual">
+      <div class="about-img-frame">
+        <!-- REPLACE with a photo of yourself / your team -->
+        <img src="SmooveFilms_Logo_Refined.JPEG" class="about-logo-large" alt="Smoove Films">
+      </div>
+      <div class="about-tag">
+        <div class="about-tag-num">8+</div>
+        <div class="about-tag-label">Years Filming</div>
+      </div>
+    </div>
+    <div class="about-content">
+      <div class="section-label">Our Story</div>
+      <div class="section-title">BEHIND THE<br><span>LENS</span></div>
+      <div class="divider"></div>
+      <p>At Smoove Films, we believe every wedding is a one-of-a-kind story waiting to be told. We're more than just videographers and photographers — we're storytellers who pour passion into every frame.</p>
+      <p>From intimate ceremonies to grand celebrations, we bring a cinematic eye and a calm, professional presence to your most important day. Our goal is simple: make you feel the day all over again, every time you watch your film.</p>
+      <div class="about-feats">
+        <div class="about-feat"><div class="feat-dot"></div><div class="feat-text">Cinematic 4K video production</div></div>
+        <div class="about-feat"><div class="feat-dot"></div><div class="feat-text">Professional photo editing &amp; color grading</div></div>
+        <div class="about-feat"><div class="feat-dot"></div><div class="feat-text">Fast turnaround — galleries within 4 weeks</div></div>
+        <div class="about-feat"><div class="feat-dot"></div><div class="feat-text">Drone &amp; aerial footage available</div></div>
+        <div class="about-feat"><div class="feat-dot"></div><div class="feat-text">Second shooter options for full coverage</div></div>
+      </div>
+      <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Work With Us</button>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:60px;">
+      <div class="section-label fade-up">Investment</div>
+      <div class="section-title fade-up">PRICING <span>PACKAGES</span></div>
+      <div class="divider fade-up" style="margin:0 auto;"></div>
+    </div>
+    <div class="pricing-grid fade-up">
+      <div class="pricing-card">
+        <div class="pricing-tier">Essential</div>
+        <div class="pricing-price"><sup>$</sup>1,200</div>
+        <div class="pricing-desc">Perfect for intimate weddings and smaller events</div>
+        <ul class="pricing-features">
+          <li>6 Hours of Coverage</li>
+          <li>1 Photographer or Videographer</li>
+          <li>Online Photo Gallery</li>
+          <li>5-Minute Highlight Film</li>
+          <li>300+ Edited Photos</li>
+        </ul>
+        <button class="btn-book outline" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Book Essential</button>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-tier">Signature</div>
+        <div class="pricing-price"><sup>$</sup>2,400</div>
+        <div class="pricing-desc">Full photo &amp; video package for your big day</div>
+        <ul class="pricing-features">
+          <li>10 Hours of Coverage</li>
+          <li>Photographer + Videographer</li>
+          <li>Drone Aerial Footage</li>
+          <li>Full Ceremony Film + Highlights</li>
+          <li>500+ Edited Photos</li>
+          <li>Engagement Session Included</li>
+        </ul>
+        <button class="btn-book" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Book Signature</button>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-tier">Elite</div>
+        <div class="pricing-price"><sup>$</sup>3,800</div>
+        <div class="pricing-desc">The ultimate luxury wedding experience</div>
+        <ul class="pricing-features">
+          <li>Full Day Coverage (12+ hrs)</li>
+          <li>2 Photographers + Videographer</li>
+          <li>Drone &amp; Cinematic Equipment</li>
+          <li>Same-Day Edit Preview</li>
+          <li>800+ Edited Photos</li>
+          <li>Engagement + Bridal Session</li>
+          <li>Premium Album Included</li>
+        </ul>
+        <button class="btn-book outline" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Book Elite</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner fade-up">
+    <div class="contact-info">
+      <div class="section-label">Let's Connect</div>
+      <div class="section-title">BOOK YOUR<br><span>DATE</span></div>
+      <div class="divider"></div>
+      <p>Ready to capture your story? Fill out the form and we'll get back to you within 24 hours to discuss your vision and check availability.</p>
+      <div class="contact-detail">
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-item-label">Location</div>
+            <!-- UPDATE with your actual location -->
+            <div class="contact-item-val">New York &amp; Tri-State Area<br>Available Nationwide</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📧</div>
+          <div>
+            <div class="contact-item-label">Email</div>
+            <!-- UPDATE with your actual email -->
+            <div class="contact-item-val">hello@smoovefilms.com</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📱</div>
+          <div>
+            <div class="contact-item-label">Phone / Text</div>
+            <!-- UPDATE with your actual phone -->
+            <div class="contact-item-val">(000) 000-0000</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📸</div>
+          <div>
+            <div class="contact-item-label">Instagram</div>
+            <!-- UPDATE with your actual Instagram -->
+            <div class="contact-item-val">@smoovefilms</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <!--
+        CONTACT FORM SETUP (Formspree — free, no backend needed):
+        1. Go to https://formspree.io and create a free account
+        2. Create a new form and copy your form ID (looks like: xpwzabcd)
+        3. Replace YOUR_FORMSPREE_ID below with your actual ID
+        That's it — submissions will be emailed to you automatically!
+      -->
+      <div id="form-success" class="form-success" style="display:none;">
+        <span>Message received!</span> We'll be in touch within 24 hours to discuss your date. 🎬
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" placeholder="Jane">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" placeholder="Smith">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" placeholder="jane@email.com">
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" placeholder="(555) 000-0000">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Event Date</label>
+          <input type="date">
+        </div>
+        <div class="form-group">
+          <label>Package</label>
+          <select>
+            <option value="">Select a package</option>
+            <option>Essential — $1,200</option>
+            <option>Signature — $2,400</option>
+            <option>Elite — $3,800</option>
+            <option>Custom / Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tell Us About Your Event</label>
+        <textarea rows="4" placeholder="Venue, event type, vision, anything you'd like us to know..."></textarea>
+      </div>
+      <button class="btn-submit" id="submit-btn" onclick="submitForm(event)">Send Inquiry →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="SmooveFilms_Logo_Refined.JPEG" alt="Smoove Films">
+  </div>
+  <div class="footer-links">
+    <a href="#gallery">Work</a>
+    <a href="#services">Services</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 <span>Smoove Films</span>. All rights reserved. Crafted with passion.</div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+async function submitForm(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const formId = 'YOUR_FORMSPREE_ID'; // REPLACE with your Formspree form ID
+
+  const data = {
+    firstName: document.querySelector('input[placeholder="Jane"]').value,
+    lastName: document.querySelector('input[placeholder="Smith"]').value,
+    email: document.querySelector('input[type="email"]').value,
+    phone: document.querySelector('input[type="tel"]').value,
+    date: document.querySelector('input[type="date"]').value,
+    package: document.querySelector('select').value,
+    message: document.querySelector('textarea').value,
+  };
+
+  if (!data.email) { alert('Please enter your email address.'); return; }
+
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://formspree.io/f/' + formId, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (res.ok) {
+      document.getElementById('form-success').style.display = 'block';
+      document.querySelector('.contact-form').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
+      btn.textContent = 'Sent!';
+    } else {
+      alert('Something went wrong. Please email us directly.');
+      btn.textContent = 'Send Inquiry →';
+      btn.disabled = false;
+    }
+  } catch {
+    alert('Network error. Please try again.');
+    btn.textContent = 'Send Inquiry →';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
