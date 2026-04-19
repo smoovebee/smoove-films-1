@@ -526,6 +526,30 @@
   .login-btn { width: 100%; background: var(--green); color: #fff; border: none; padding: 14px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
   .login-btn:hover { background: var(--green-bright); color: #0a0a0a; }
   .login-error { color: #e74c3c; font-size: 12px; margin-top: 12px; display: none; }
+
+  /* ADMIN TABS */
+  .admin-tabs { display: flex; gap: 2px; margin-bottom: 32px; flex-wrap: wrap; }
+  .admin-tab {
+    background: #1a1a1a; color: var(--muted); border: none;
+    padding: 10px 20px; font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .admin-tab.active, .admin-tab:hover { background: var(--green); color: #fff; }
+  .admin-tab-content { display: none; }
+  .admin-tab-content.active { display: block; }
+  .admin-field-group { margin-bottom: 24px; }
+  .admin-field-group label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .admin-field-group input, .admin-field-group textarea {
+    width: 100%; background: #0d0d0d; border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; padding: 12px 14px; font-family: 'Montserrat', sans-serif;
+    font-size: 13px; outline: none; transition: border-color 0.2s; resize: vertical;
+  }
+  .admin-field-group input:focus, .admin-field-group textarea:focus { border-color: var(--green); }
+  .admin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .admin-service-block { background: #0d0d0d; border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+  .admin-service-block h4 { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--green-bright); margin-bottom: 16px; letter-spacing: 1px; }
+  .preview-badge { display: inline-block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; background: var(--green-dark); color: var(--green-bright); padding: 2px 8px; margin-left: 8px; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -551,12 +575,11 @@
   <div class="hero-bg"></div>
   <div class="hero-lines"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow">Wedding &amp; Event Specialists</div>
+    <div class="hero-eyebrow" id="sf-tagline">Wedding &amp; Event Specialists</div>
     <h1>SMOOVE<br><span>FILMS</span></h1>
-    <div class="hero-sub">Videographer &nbsp;✦&nbsp; Photographer</div>
+    <div class="hero-sub" id="sf-subtitle">Videographer &nbsp;✦&nbsp; Photographer</div>
     <p class="hero-desc">
-      We capture the moments that matter most — your wedding, your story, your legacy.
-      Cinematic quality that moves you, every frame.
+      <span id="sf-herodesc">We capture the moments that matter most — your wedding, your story, your legacy. Cinematic quality that moves you, every frame.</span>
     </p>
     <div class="hero-btns">
       <button class="btn-primary" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">View Our Work</button>
@@ -572,20 +595,20 @@
 <!-- STATS -->
 <div class="stats">
   <div class="stat">
-    <div class="stat-num">500<span>+</span></div>
-    <div class="stat-label">Events Filmed</div>
+    <div class="stat-num" id="sf-stat1-num">500<span>+</span></div>
+    <div class="stat-label" id="sf-stat1-label">Events Filmed</div>
   </div>
   <div class="stat">
-    <div class="stat-num">8<span>+</span></div>
-    <div class="stat-label">Years Experience</div>
+    <div class="stat-num" id="sf-stat2-num">8<span>+</span></div>
+    <div class="stat-label" id="sf-stat2-label">Years Experience</div>
   </div>
   <div class="stat">
-    <div class="stat-num">100<span>%</span></div>
-    <div class="stat-label">5-Star Reviews</div>
+    <div class="stat-num" id="sf-stat3-num">100<span>%</span></div>
+    <div class="stat-label" id="sf-stat3-label">5-Star Reviews</div>
   </div>
   <div class="stat">
-    <div class="stat-num">50<span>+</span></div>
-    <div class="stat-label">Venues Covered</div>
+    <div class="stat-num" id="sf-stat4-num">50<span>+</span></div>
+    <div class="stat-label" id="sf-stat4-label">Venues Covered</div>
   </div>
 </div>
 
@@ -686,44 +709,44 @@
       <div class="service-card fade-up">
         <span class="service-icon">🎬</span>
         <span class="service-num">01</span>
-        <h3>Wedding Videography</h3>
-        <p>Full-day cinematic coverage of your wedding from preparation to reception. Delivered as a highlight film and full ceremony edit.</p>
-        <div class="service-price">Starting at $1,500</div>
+        <h3 id="sf-s1-title">Wedding Videography</h3>
+        <p id="sf-s1-desc">Full-day cinematic coverage of your wedding from preparation to reception. Delivered as a highlight film and full ceremony edit.</p>
+        <div class="service-price" id="sf-s1-price">Starting at $1,500</div>
       </div>
       <div class="service-card fade-up">
         <span class="service-icon">📷</span>
         <span class="service-num">02</span>
-        <h3>Wedding Photography</h3>
-        <p>Professional photography capturing every emotion, detail, and candid moment. Delivered as a curated gallery of high-resolution images.</p>
-        <div class="service-price">Starting at $1,200</div>
+        <h3 id="sf-s2-title">Wedding Photography</h3>
+        <p id="sf-s2-desc">Professional photography capturing every emotion, detail, and candid moment. Delivered as a curated gallery of high-resolution images.</p>
+        <div class="service-price" id="sf-s2-price">Starting at $1,200</div>
       </div>
       <div class="service-card fade-up">
         <span class="service-icon">💍</span>
         <span class="service-num">03</span>
-        <h3>Photo + Video Bundle</h3>
-        <p>Get the complete package — both photo and video coverage at a discounted rate. The ultimate way to preserve your day.</p>
-        <div class="service-price">Starting at $2,400</div>
+        <h3 id="sf-s3-title">Photo + Video Bundle</h3>
+        <p id="sf-s3-desc">Get the complete package — both photo and video coverage at a discounted rate. The ultimate way to preserve your day.</p>
+        <div class="service-price" id="sf-s3-price">Starting at $2,400</div>
       </div>
       <div class="service-card fade-up">
         <span class="service-icon">🎉</span>
         <span class="service-num">04</span>
-        <h3>Event Coverage</h3>
-        <p>Corporate events, birthday celebrations, graduations, and more. We bring the same cinematic energy to every occasion.</p>
-        <div class="service-price">Starting at $800</div>
+        <h3 id="sf-s4-title">Event Coverage</h3>
+        <p id="sf-s4-desc">Corporate events, birthday celebrations, graduations, and more. We bring the same cinematic energy to every occasion.</p>
+        <div class="service-price" id="sf-s4-price">Starting at $800</div>
       </div>
       <div class="service-card fade-up">
         <span class="service-icon">💏</span>
         <span class="service-num">05</span>
-        <h3>Engagement Sessions</h3>
-        <p>Relaxed, romantic photo sessions for couples. Perfect for save-the-dates, social media, or just a beautiful memory.</p>
-        <div class="service-price">Starting at $400</div>
+        <h3 id="sf-s5-title">Engagement Sessions</h3>
+        <p id="sf-s5-desc">Relaxed, romantic photo sessions for couples. Perfect for save-the-dates, social media, or just a beautiful memory.</p>
+        <div class="service-price" id="sf-s5-price">Starting at $400</div>
       </div>
       <div class="service-card fade-up">
         <span class="service-icon">✈️</span>
         <span class="service-num">06</span>
-        <h3>Destination Weddings</h3>
-        <p>We travel wherever your love takes you. Destination wedding coverage available nationwide and internationally.</p>
-        <div class="service-price">Custom Quote</div>
+        <h3 id="sf-s6-title">Destination Weddings</h3>
+        <p id="sf-s6-desc">We travel wherever your love takes you. Destination wedding coverage available nationwide and internationally.</p>
+        <div class="service-price" id="sf-s6-price">Custom Quote</div>
       </div>
     </div>
   </div>
@@ -746,8 +769,8 @@
       <div class="section-label">Our Story</div>
       <div class="section-title">BEHIND THE<br><span>LENS</span></div>
       <div class="divider"></div>
-      <p>At Smoove Films, we believe every wedding is a one-of-a-kind story waiting to be told. We're more than just videographers and photographers — we're storytellers who pour passion into every frame.</p>
-      <p>From intimate ceremonies to grand celebrations, we bring a cinematic eye and a calm, professional presence to your most important day. Our goal is simple: make you feel the day all over again, every time you watch your film.</p>
+      <p id="sf-about1">At Smoove Films, we believe every wedding is a one-of-a-kind story waiting to be told. We're more than just videographers and photographers — we're storytellers who pour passion into every frame.</p>
+      <p id="sf-about2">From intimate ceremonies to grand celebrations, we bring a cinematic eye and a calm, professional presence to your most important day. Our goal is simple: make you feel the day all over again, every time you watch your film.</p>
       <div class="about-feats">
         <div class="about-feat"><div class="feat-dot"></div><div class="feat-text">Cinematic 4K video production</div></div>
         <div class="about-feat"><div class="feat-dot"></div><div class="feat-text">Professional photo editing &amp; color grading</div></div>
@@ -830,7 +853,7 @@
           <div>
             <div class="contact-item-label">Location</div>
             <!-- UPDATE with your actual location -->
-            <div class="contact-item-val">New York &amp; Tri-State Area<br>Available Nationwide</div>
+            <div class="contact-item-val" id="sf-location">New York &amp; Tri-State Area — Available Nationwide</div>
           </div>
         </div>
         <div class="contact-item">
@@ -838,7 +861,7 @@
           <div>
             <div class="contact-item-label">Email</div>
             <!-- UPDATE with your actual email -->
-            <div class="contact-item-val">hello@smoovefilms.com</div>
+            <div class="contact-item-val" id="sf-email">hello@smoovefilms.com</div>
           </div>
         </div>
         <div class="contact-item">
@@ -846,7 +869,7 @@
           <div>
             <div class="contact-item-label">Phone / Text</div>
             <!-- UPDATE with your actual phone -->
-            <div class="contact-item-val">(000) 000-0000</div>
+            <div class="contact-item-val" id="sf-phone">(000) 000-0000</div>
           </div>
         </div>
         <div class="contact-item">
@@ -854,7 +877,7 @@
           <div>
             <div class="contact-item-label">Instagram</div>
             <!-- UPDATE with your actual Instagram -->
-            <div class="contact-item-val">@smoovefilms</div>
+            <div class="contact-item-val" id="sf-instagram">@smoovefilms</div>
           </div>
         </div>
       </div>
@@ -990,6 +1013,79 @@ async function submitForm(e) {
 const ADMIN_PASSWORD = 'smoove2025'; // CHANGE THIS to your own password
 let adminPhotos = [];
 
+// Tab switching
+function switchTab(id) {
+  document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Live preview update
+function liveUpdate(elId, value) {
+  const el = document.getElementById(elId);
+  if (el) el.textContent = value;
+}
+
+// Load current page content into admin fields
+function loadCurrentContent() {
+  const fields = [
+    ['ed-tagline','sf-tagline'],['ed-subtitle','sf-subtitle'],['ed-herodesc','sf-herodesc'],
+    ['ed-stat1-num','sf-stat1-num'],['ed-stat1-label','sf-stat1-label'],
+    ['ed-stat2-num','sf-stat2-num'],['ed-stat2-label','sf-stat2-label'],
+    ['ed-stat3-num','sf-stat3-num'],['ed-stat3-label','sf-stat3-label'],
+    ['ed-stat4-num','sf-stat4-num'],['ed-stat4-label','sf-stat4-label'],
+    ['ed-about1','sf-about1'],['ed-about2','sf-about2'],
+    ['ed-s1-title','sf-s1-title'],['ed-s1-desc','sf-s1-desc'],['ed-s1-price','sf-s1-price'],
+    ['ed-s2-title','sf-s2-title'],['ed-s2-desc','sf-s2-desc'],['ed-s2-price','sf-s2-price'],
+    ['ed-s3-title','sf-s3-title'],['ed-s3-desc','sf-s3-desc'],['ed-s3-price','sf-s3-price'],
+    ['ed-s4-title','sf-s4-title'],['ed-s4-desc','sf-s4-desc'],['ed-s4-price','sf-s4-price'],
+    ['ed-s5-title','sf-s5-title'],['ed-s5-desc','sf-s5-desc'],['ed-s5-price','sf-s5-price'],
+    ['ed-s6-title','sf-s6-title'],['ed-s6-desc','sf-s6-desc'],['ed-s6-price','sf-s6-price'],
+    ['ed-location','sf-location'],['ed-email','sf-email'],
+    ['ed-phone','sf-phone'],['ed-instagram','sf-instagram'],
+  ];
+  // Load from localStorage first, then fall back to page content
+  const saved = JSON.parse(localStorage.getItem('sf_content') || '{}');
+  fields.forEach(([edId, sfId]) => {
+    const edEl = document.getElementById(edId);
+    const sfEl = document.getElementById(sfId);
+    if (edEl && sfEl) {
+      const val = saved[sfId] || sfEl.textContent.trim();
+      edEl.value = val;
+      if (saved[sfId]) sfEl.textContent = saved[sfId];
+    }
+  });
+}
+
+// Save a section
+function saveSection(section) {
+  const saved = JSON.parse(localStorage.getItem('sf_content') || '{}');
+  const sectionMap = {
+    hero: ['sf-tagline','sf-subtitle','sf-herodesc'],
+    stats: ['sf-stat1-num','sf-stat1-label','sf-stat2-num','sf-stat2-label','sf-stat3-num','sf-stat3-label','sf-stat4-num','sf-stat4-label'],
+    about: ['sf-about1','sf-about2'],
+    services: ['sf-s1-title','sf-s1-desc','sf-s1-price','sf-s2-title','sf-s2-desc','sf-s2-price','sf-s3-title','sf-s3-desc','sf-s3-price','sf-s4-title','sf-s4-desc','sf-s4-price','sf-s5-title','sf-s5-desc','sf-s5-price','sf-s6-title','sf-s6-desc','sf-s6-price'],
+    contact: ['sf-location','sf-email','sf-phone','sf-instagram'],
+  };
+  const ids = sectionMap[section] || [];
+  ids.forEach(sfId => {
+    const el = document.getElementById(sfId);
+    if (el) saved[sfId] = el.textContent.trim();
+  });
+  localStorage.setItem('sf_content', JSON.stringify(saved));
+  showToast('\u2713 ' + section.charAt(0).toUpperCase() + section.slice(1) + ' saved!');
+}
+
+// Restore saved content on page load
+function restoreSavedContent() {
+  const saved = JSON.parse(localStorage.getItem('sf_content') || '{}');
+  Object.entries(saved).forEach(([sfId, val]) => {
+    const el = document.getElementById(sfId);
+    if (el) el.textContent = val;
+  });
+}
+
 function showToast(msg) {
   const t = document.getElementById('admin-toast');
   t.textContent = msg; t.classList.add('show');
@@ -999,6 +1095,7 @@ function showToast(msg) {
 function openAdmin() {
   if (sessionStorage.getItem('sf_admin') === '1') {
     document.getElementById('admin-overlay').classList.add('open');
+    loadCurrentContent();
     renderAdminThumbs();
   } else {
     document.getElementById('admin-login').classList.add('open');
@@ -1014,6 +1111,7 @@ function doLogin() {
     document.getElementById('admin-overlay').classList.add('open');
     document.getElementById('admin-pw-input').value = '';
     document.getElementById('login-error').style.display = 'none';
+    loadCurrentContent();
     renderAdminThumbs();
   } else {
     document.getElementById('login-error').style.display = 'block';
@@ -1090,8 +1188,9 @@ function updateLiveGallery(photos) {
   });
 }
 
-// Load saved photos on page start
+// Load saved content and photos on page start
 (function() {
+  restoreSavedContent();
   const saved = JSON.parse(localStorage.getItem('sf_photos') || '[]');
   if (saved.length) updateLiveGallery(saved);
 })();
@@ -1108,7 +1207,7 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
     <img src="SmooveFilms_Logo_Refined.JPEG" alt="Smoove Films">
     <div class="login-title">Admin Login</div>
     <div class="login-sub">Enter your password to manage your site</div>
-    <input class="login-input" type="password" id="admin-pw-input" placeholder="••••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <input class="login-input" type="password" id="admin-pw-input" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">Enter Admin Panel</button>
     <div class="login-error" id="login-error">Incorrect password. Try again.</div>
   </div>
@@ -1119,25 +1218,172 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
   <div class="admin-wrap">
     <div class="admin-header">
       <img src="SmooveFilms_Logo_Refined.JPEG" class="admin-logo" alt="Smoove Films">
-      <div class="admin-title">Admin Panel</div>
+      <div class="admin-title">Admin Panel <span class="preview-badge">Live Preview</span></div>
       <button class="admin-close" onclick="closeAdmin()">&#10005; Close</button>
     </div>
 
-    <div class="admin-section-title">Gallery Photos</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Upload photos below. They will appear in your gallery. Changes are saved to this browser — to make them permanent, re-download and re-upload the site file.</p>
-
-    <div class="admin-upload-zone" onclick="document.getElementById('photo-upload').click()">
-      <input type="file" id="photo-upload" accept="image/*" multiple onchange="handleUpload(this)">
-      <div class="upload-icon">&#128247;</div>
-      <div class="upload-text">Click to upload photos</div>
-      <div class="upload-sub">JPG, PNG, WEBP supported &bull; Multiple files ok</div>
+    <!-- TABS -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('tab-hero')">Hero</button>
+      <button class="admin-tab" onclick="switchTab('tab-stats')">Stats</button>
+      <button class="admin-tab" onclick="switchTab('tab-about')">About</button>
+      <button class="admin-tab" onclick="switchTab('tab-services')">Services</button>
+      <button class="admin-tab" onclick="switchTab('tab-contact')">Contact Info</button>
+      <button class="admin-tab" onclick="switchTab('tab-gallery')">Gallery Photos</button>
     </div>
 
-    <div class="admin-gallery-grid" id="admin-thumbs">
-      <div class="admin-empty" id="admin-empty-msg">No photos uploaded yet. Upload above to get started.</div>
+    <!-- TAB: HERO -->
+    <div class="admin-tab-content active" id="tab-hero">
+      <div class="admin-field-group">
+        <label>Tagline (top of hero)</label>
+        <input type="text" id="ed-tagline" oninput="liveUpdate('sf-tagline',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Subtitle (below logo)</label>
+        <input type="text" id="ed-subtitle" oninput="liveUpdate('sf-subtitle',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Hero Description</label>
+        <textarea rows="3" id="ed-herodesc" oninput="liveUpdate('sf-herodesc',this.value)"></textarea>
+      </div>
+      <button class="admin-save-btn" onclick="saveSection('hero')">Save Hero</button>
     </div>
 
-    <button class="admin-save-btn" onclick="applyToGallery()">Apply to Gallery &amp; Save</button>
+    <!-- TAB: STATS -->
+    <div class="admin-tab-content" id="tab-stats">
+      <div class="admin-row">
+        <div class="admin-field-group">
+          <label>Stat 1 Number</label>
+          <input type="text" id="ed-stat1-num" oninput="liveUpdate('sf-stat1-num',this.value)">
+        </div>
+        <div class="admin-field-group">
+          <label>Stat 1 Label</label>
+          <input type="text" id="ed-stat1-label" oninput="liveUpdate('sf-stat1-label',this.value)">
+        </div>
+      </div>
+      <div class="admin-row">
+        <div class="admin-field-group">
+          <label>Stat 2 Number</label>
+          <input type="text" id="ed-stat2-num" oninput="liveUpdate('sf-stat2-num',this.value)">
+        </div>
+        <div class="admin-field-group">
+          <label>Stat 2 Label</label>
+          <input type="text" id="ed-stat2-label" oninput="liveUpdate('sf-stat2-label',this.value)">
+        </div>
+      </div>
+      <div class="admin-row">
+        <div class="admin-field-group">
+          <label>Stat 3 Number</label>
+          <input type="text" id="ed-stat3-num" oninput="liveUpdate('sf-stat3-num',this.value)">
+        </div>
+        <div class="admin-field-group">
+          <label>Stat 3 Label</label>
+          <input type="text" id="ed-stat3-label" oninput="liveUpdate('sf-stat3-label',this.value)">
+        </div>
+      </div>
+      <div class="admin-row">
+        <div class="admin-field-group">
+          <label>Stat 4 Number</label>
+          <input type="text" id="ed-stat4-num" oninput="liveUpdate('sf-stat4-num',this.value)">
+        </div>
+        <div class="admin-field-group">
+          <label>Stat 4 Label</label>
+          <input type="text" id="ed-stat4-label" oninput="liveUpdate('sf-stat4-label',this.value)">
+        </div>
+      </div>
+      <button class="admin-save-btn" onclick="saveSection('stats')">Save Stats</button>
+    </div>
+
+    <!-- TAB: ABOUT -->
+    <div class="admin-tab-content" id="tab-about">
+      <div class="admin-field-group">
+        <label>About Paragraph 1</label>
+        <textarea rows="4" id="ed-about1" oninput="liveUpdate('sf-about1',this.value)"></textarea>
+      </div>
+      <div class="admin-field-group">
+        <label>About Paragraph 2</label>
+        <textarea rows="4" id="ed-about2" oninput="liveUpdate('sf-about2',this.value)"></textarea>
+      </div>
+      <button class="admin-save-btn" onclick="saveSection('about')">Save About</button>
+    </div>
+
+    <!-- TAB: SERVICES -->
+    <div class="admin-tab-content" id="tab-services">
+      <div class="admin-service-block">
+        <h4>Service 1</h4>
+        <div class="admin-field-group"><label>Title</label><input type="text" id="ed-s1-title" oninput="liveUpdate('sf-s1-title',this.value)"></div>
+        <div class="admin-field-group"><label>Description</label><textarea rows="2" id="ed-s1-desc" oninput="liveUpdate('sf-s1-desc',this.value)"></textarea></div>
+        <div class="admin-field-group"><label>Price</label><input type="text" id="ed-s1-price" oninput="liveUpdate('sf-s1-price',this.value)"></div>
+      </div>
+      <div class="admin-service-block">
+        <h4>Service 2</h4>
+        <div class="admin-field-group"><label>Title</label><input type="text" id="ed-s2-title" oninput="liveUpdate('sf-s2-title',this.value)"></div>
+        <div class="admin-field-group"><label>Description</label><textarea rows="2" id="ed-s2-desc" oninput="liveUpdate('sf-s2-desc',this.value)"></textarea></div>
+        <div class="admin-field-group"><label>Price</label><input type="text" id="ed-s2-price" oninput="liveUpdate('sf-s2-price',this.value)"></div>
+      </div>
+      <div class="admin-service-block">
+        <h4>Service 3</h4>
+        <div class="admin-field-group"><label>Title</label><input type="text" id="ed-s3-title" oninput="liveUpdate('sf-s3-title',this.value)"></div>
+        <div class="admin-field-group"><label>Description</label><textarea rows="2" id="ed-s3-desc" oninput="liveUpdate('sf-s3-desc',this.value)"></textarea></div>
+        <div class="admin-field-group"><label>Price</label><input type="text" id="ed-s3-price" oninput="liveUpdate('sf-s3-price',this.value)"></div>
+      </div>
+      <div class="admin-service-block">
+        <h4>Service 4</h4>
+        <div class="admin-field-group"><label>Title</label><input type="text" id="ed-s4-title" oninput="liveUpdate('sf-s4-title',this.value)"></div>
+        <div class="admin-field-group"><label>Description</label><textarea rows="2" id="ed-s4-desc" oninput="liveUpdate('sf-s4-desc',this.value)"></textarea></div>
+        <div class="admin-field-group"><label>Price</label><input type="text" id="ed-s4-price" oninput="liveUpdate('sf-s4-price',this.value)"></div>
+      </div>
+      <div class="admin-service-block">
+        <h4>Service 5</h4>
+        <div class="admin-field-group"><label>Title</label><input type="text" id="ed-s5-title" oninput="liveUpdate('sf-s5-title',this.value)"></div>
+        <div class="admin-field-group"><label>Description</label><textarea rows="2" id="ed-s5-desc" oninput="liveUpdate('sf-s5-desc',this.value)"></textarea></div>
+        <div class="admin-field-group"><label>Price</label><input type="text" id="ed-s5-price" oninput="liveUpdate('sf-s5-price',this.value)"></div>
+      </div>
+      <div class="admin-service-block">
+        <h4>Service 6</h4>
+        <div class="admin-field-group"><label>Title</label><input type="text" id="ed-s6-title" oninput="liveUpdate('sf-s6-title',this.value)"></div>
+        <div class="admin-field-group"><label>Description</label><textarea rows="2" id="ed-s6-desc" oninput="liveUpdate('sf-s6-desc',this.value)"></textarea></div>
+        <div class="admin-field-group"><label>Price</label><input type="text" id="ed-s6-price" oninput="liveUpdate('sf-s6-price',this.value)"></div>
+      </div>
+      <button class="admin-save-btn" onclick="saveSection('services')">Save Services</button>
+    </div>
+
+    <!-- TAB: CONTACT -->
+    <div class="admin-tab-content" id="tab-contact">
+      <div class="admin-field-group">
+        <label>Location</label>
+        <input type="text" id="ed-location" oninput="liveUpdate('sf-location',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Email Address</label>
+        <input type="email" id="ed-email" oninput="liveUpdate('sf-email',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Phone Number</label>
+        <input type="text" id="ed-phone" oninput="liveUpdate('sf-phone',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Instagram Handle</label>
+        <input type="text" id="ed-instagram" oninput="liveUpdate('sf-instagram',this.value)">
+      </div>
+      <button class="admin-save-btn" onclick="saveSection('contact')">Save Contact Info</button>
+    </div>
+
+    <!-- TAB: GALLERY -->
+    <div class="admin-tab-content" id="tab-gallery">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Upload photos and they will appear live in your gallery.</p>
+      <div class="admin-upload-zone" onclick="document.getElementById('photo-upload').click()">
+        <input type="file" id="photo-upload" accept="image/*" multiple onchange="handleUpload(this)">
+        <div class="upload-icon">&#128247;</div>
+        <div class="upload-text">Click to upload photos</div>
+        <div class="upload-sub">JPG, PNG, WEBP &bull; Multiple files ok</div>
+      </div>
+      <div class="admin-gallery-grid" id="admin-thumbs">
+        <div class="admin-empty" id="admin-empty-msg">No photos uploaded yet.</div>
+      </div>
+      <button class="admin-save-btn" onclick="applyToGallery()">Apply to Gallery</button>
+    </div>
+
   </div>
 </div>
 
