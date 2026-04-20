@@ -798,8 +798,8 @@
       </div>
     </div>
     <div class="about-content">
-      <div class="section-label">Our Story</div>
-      <div class="section-title">BEHIND THE<br><span>LENS</span></div>
+      <div class="section-label" id="sf-story-label">Our Story</div>
+      <div class="section-title" id="sf-story-title">BEHIND THE <span>LENS</span></div>
       <div class="divider"></div>
       <p id="sf-about1">At Smoove Films, we believe every wedding is a one-of-a-kind story waiting to be told. We're more than just videographers and photographers — we're storytellers who pour passion into every frame.</p>
       <p id="sf-about2">From intimate ceremonies to grand celebrations, we bring a cinematic eye and a calm, professional presence to your most important day. Our goal is simple: make you feel the day all over again, every time you watch your film.</p>
@@ -1013,6 +1013,7 @@ function loadCurrentContent() {
     ['ed-stat2-num','sf-stat2-num'],['ed-stat2-label','sf-stat2-label'],
     ['ed-stat3-num','sf-stat3-num'],['ed-stat3-label','sf-stat3-label'],
     ['ed-stat4-num','sf-stat4-num'],['ed-stat4-label','sf-stat4-label'],
+    ['ed-story-label','sf-story-label'],['ed-story-title','sf-story-title'],
     ['ed-about1','sf-about1'],['ed-about2','sf-about2'],
     ['ed-s1-title','sf-s1-title'],['ed-s1-desc','sf-s1-desc'],['ed-s1-price','sf-s1-price'],
     ['ed-s2-title','sf-s2-title'],['ed-s2-desc','sf-s2-desc'],['ed-s2-price','sf-s2-price'],
@@ -1042,7 +1043,7 @@ function saveSection(section) {
   const sectionMap = {
     hero: ['sf-tagline','sf-subtitle','sf-herodesc'],
     stats: ['sf-stat1-num','sf-stat1-label','sf-stat2-num','sf-stat2-label','sf-stat3-num','sf-stat3-label','sf-stat4-num','sf-stat4-label'],
-    about: ['sf-about1','sf-about2'],
+    about: ['sf-story-label','sf-story-title','sf-about1','sf-about2'],
     services: ['sf-s1-title','sf-s1-desc','sf-s1-price','sf-s2-title','sf-s2-desc','sf-s2-price','sf-s3-title','sf-s3-desc','sf-s3-price','sf-s4-title','sf-s4-desc','sf-s4-price','sf-s5-title','sf-s5-desc','sf-s5-price','sf-s6-title','sf-s6-desc','sf-s6-price'],
     contact: ['sf-location','sf-email','sf-phone','sf-instagram'],
   };
@@ -1463,6 +1464,14 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
 
     <!-- TAB: ABOUT -->
     <div class="admin-tab-content" id="tab-about">
+      <div class="admin-field-group">
+        <label>Section Label (e.g. "Our Story")</label>
+        <input type="text" id="ed-story-label" oninput="liveUpdate('sf-story-label',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Section Title (e.g. "BEHIND THE LENS")</label>
+        <input type="text" id="ed-story-title" oninput="liveUpdate('sf-story-title',this.value)">
+      </div>
       <div class="admin-field-group">
         <label>About Paragraph 1</label>
         <textarea rows="4" id="ed-about1" oninput="liveUpdate('sf-about1',this.value)"></textarea>
