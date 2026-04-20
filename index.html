@@ -583,6 +583,27 @@
   .admin-service-block { background: #0d0d0d; border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
   .admin-service-block h4 { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--green-bright); margin-bottom: 16px; letter-spacing: 1px; }
   .preview-badge { display: inline-block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; background: var(--green-dark); color: var(--green-bright); padding: 2px 8px; margin-left: 8px; vertical-align: middle; }
+
+  /* GALLERY LAYOUTS */
+  #gallery-grid.layout-3col { grid-template-columns: repeat(3, 1fr); }
+  #gallery-grid.layout-3col .gallery-item:first-child { grid-column: span 2; }
+  #gallery-grid.layout-3col .gallery-item:nth-child(5) { grid-column: span 2; }
+  #gallery-grid.layout-2col { grid-template-columns: repeat(2, 1fr); }
+  #gallery-grid.layout-2col .gallery-item:first-child { grid-column: span 1; aspect-ratio: 4/3; }
+  #gallery-grid.layout-2col .gallery-item:nth-child(5) { grid-column: span 1; }
+  #gallery-grid.layout-masonry { grid-template-columns: repeat(3, 1fr); }
+  #gallery-grid.layout-masonry .gallery-item:first-child { grid-column: span 1; aspect-ratio: 4/3; }
+  #gallery-grid.layout-masonry .gallery-item:nth-child(5) { grid-column: span 1; }
+  #gallery-grid.layout-single { grid-template-columns: 1fr; }
+  #gallery-grid.layout-single .gallery-item { aspect-ratio: 16/6; grid-column: span 1 !important; }
+  .layout-btn {
+    background: #1a1a1a; border: 1px solid var(--border); color: var(--muted);
+    padding: 10px 16px; cursor: pointer; font-family: 'Montserrat', sans-serif;
+    font-size: 18px; transition: all 0.2s; border-radius: 2px;
+  }
+  .layout-btn.active, .layout-btn:hover { background: var(--green); color: #fff; border-color: var(--green); }
+  .layout-btns { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+  .layout-btns span { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-right: 8px; }
 </style>
 </head>
 <body>
@@ -664,42 +685,42 @@
           <div class="gallery-label">FEATURED WEDDING</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text">The Johnson Wedding — 2024</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay1">The Johnson Wedding — 2024</div></div>
       </div>
       <div class="gallery-item" style="background: linear-gradient(135deg, #0f1a11, #162b1a);">
         <div class="gallery-placeholder">
           <div class="gallery-label">PORTRAIT</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text">Bridal Portraits</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay2">Bridal Portraits</div></div>
       </div>
       <div class="gallery-item" style="background: linear-gradient(135deg, #0a1a0c, #1f4025);">
         <div class="gallery-placeholder">
           <div class="gallery-label">CEREMONY</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text">Ceremony Highlights</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay3">Ceremony Highlights</div></div>
       </div>
       <div class="gallery-item" style="background: linear-gradient(135deg, #0d1f0f, #163820);">
         <div class="gallery-placeholder">
           <div class="gallery-label">RECEPTION</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text">Reception Vibes</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay4">Reception Vibes</div></div>
       </div>
       <div class="gallery-item" style="background: linear-gradient(135deg, #0a1a0c, #1a3020);">
         <div class="gallery-placeholder">
           <div class="gallery-label">CINEMATIC REEL</div>
           <div class="gallery-sub">ADD YOUR VIDEO THUMBNAIL HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text">Watch Highlight Reel</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay5">Watch Highlight Reel</div></div>
       </div>
       <div class="gallery-item" style="background: linear-gradient(135deg, #111f13, #1a3520);">
         <div class="gallery-placeholder">
           <div class="gallery-label">DETAILS</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text">The Little Details</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay6">The Little Details</div></div>
       </div>
     </div>
   </div>
@@ -1013,6 +1034,10 @@ function loadCurrentContent() {
     ['ed-stat2-num','sf-stat2-num'],['ed-stat2-label','sf-stat2-label'],
     ['ed-stat3-num','sf-stat3-num'],['ed-stat3-label','sf-stat3-label'],
     ['ed-stat4-num','sf-stat4-num'],['ed-stat4-label','sf-stat4-label'],
+    ['ed-gallery-label','sf-gallery-label'],['ed-gallery-title','sf-gallery-title'],
+    ['ed-gallery-title-accent','sf-gallery-title-accent'],
+    ['ed-overlay1','sf-overlay1'],['ed-overlay2','sf-overlay2'],['ed-overlay3','sf-overlay3'],
+    ['ed-overlay4','sf-overlay4'],['ed-overlay5','sf-overlay5'],['ed-overlay6','sf-overlay6'],
     ['ed-story-label','sf-story-label'],['ed-story-title','sf-story-title'],
     ['ed-about1','sf-about1'],['ed-about2','sf-about2'],
     ['ed-bullet1','sf-bullet1'],['ed-bullet2','sf-bullet2'],['ed-bullet3','sf-bullet3'],
@@ -1045,6 +1070,8 @@ function saveSection(section) {
   const sectionMap = {
     hero: ['sf-tagline','sf-subtitle','sf-herodesc'],
     stats: ['sf-stat1-num','sf-stat1-label','sf-stat2-num','sf-stat2-label','sf-stat3-num','sf-stat3-label','sf-stat4-num','sf-stat4-label'],
+    gallery: ['sf-gallery-label','sf-gallery-title','sf-gallery-title-accent',
+      'sf-overlay1','sf-overlay2','sf-overlay3','sf-overlay4','sf-overlay5','sf-overlay6'],
     about: ['sf-story-label','sf-story-title','sf-about1','sf-about2','sf-bullet1','sf-bullet2','sf-bullet3','sf-bullet4','sf-bullet5'],
     services: ['sf-s1-title','sf-s1-desc','sf-s1-price','sf-s2-title','sf-s2-desc','sf-s2-price','sf-s3-title','sf-s3-desc','sf-s3-price','sf-s4-title','sf-s4-desc','sf-s4-price','sf-s5-title','sf-s5-desc','sf-s5-price','sf-s6-title','sf-s6-desc','sf-s6-price'],
     contact: ['sf-location','sf-email','sf-phone','sf-instagram'],
@@ -1203,6 +1230,36 @@ function closeVideoModal() {
   restoreSavedContent();
   const saved = JSON.parse(localStorage.getItem('sf_photos') || '[]');
   if (saved.length) updateLiveGallery(saved);
+})();
+
+// ---- GALLERY LAYOUT & HEADER ----
+function liveGalleryTitle() {
+  const title = document.getElementById('ed-gallery-title').value;
+  const accent = document.getElementById('ed-gallery-title-accent').value;
+  const titleEl = document.getElementById('sf-gallery-title');
+  if (titleEl) titleEl.innerHTML = title + ' <span id="sf-gallery-title-accent" style="color:var(--green-bright)">' + accent + '</span>';
+}
+
+function setLayout(layoutClass, btn) {
+  const grid = document.getElementById('gallery-grid');
+  grid.classList.remove('layout-3col','layout-2col','layout-single','layout-masonry');
+  grid.classList.add(layoutClass);
+  document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  localStorage.setItem('sf_gallery_layout', layoutClass);
+  showToast('Layout updated!');
+}
+
+// Restore layout on load
+(function() {
+  const savedLayout = localStorage.getItem('sf_gallery_layout');
+  if (savedLayout) {
+    const grid = document.getElementById('gallery-grid');
+    if (grid) {
+      grid.classList.remove('layout-3col','layout-2col','layout-single','layout-masonry');
+      grid.classList.add(savedLayout);
+    }
+  }
 })();
 
 // ---- VIDEO LINK MANAGER ----
@@ -1398,6 +1455,7 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
       <button class="admin-tab" onclick="switchTab('tab-about')">About</button>
       <button class="admin-tab" onclick="switchTab('tab-services')">Services</button>
       <button class="admin-tab" onclick="switchTab('tab-contact')">Contact Info</button>
+      <button class="admin-tab" onclick="switchTab('tab-ourwork')">Our Work</button>
       <button class="admin-tab" onclick="switchTab('tab-gallery')">Gallery Photos</button>
       <button class="admin-tab" onclick="switchTab('tab-videos')">&#127916; Videos</button>
     </div>
@@ -1566,6 +1624,61 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
         <input type="text" id="ed-instagram" oninput="liveUpdate('sf-instagram',this.value)">
       </div>
       <button class="admin-save-btn" onclick="saveSection('contact')">Save Contact Info</button>
+    </div>
+
+    <!-- TAB: OUR WORK -->
+    <div class="admin-tab-content" id="tab-ourwork">
+      <div class="admin-field-group">
+        <label>Section Label (small green text)</label>
+        <input type="text" id="ed-gallery-label" oninput="liveUpdate('sf-gallery-label',this.value)" placeholder="Our Work">
+      </div>
+      <div class="admin-row">
+        <div class="admin-field-group">
+          <label>Title (first word)</label>
+          <input type="text" id="ed-gallery-title" oninput="liveGalleryTitle()" placeholder="MOMENTS">
+        </div>
+        <div class="admin-field-group">
+          <label>Title (accent word in green)</label>
+          <input type="text" id="ed-gallery-title-accent" oninput="liveGalleryTitle()" placeholder="CAPTURED">
+        </div>
+      </div>
+
+      <div class="admin-section-title" style="margin-top:8px;">Gallery Layout</div>
+      <div class="layout-btns">
+        <span>Choose layout:</span>
+        <button class="layout-btn active" title="3 Column (default)" onclick="setLayout('layout-3col',this)">&#9783;</button>
+        <button class="layout-btn" title="2 Column" onclick="setLayout('layout-2col',this)">&#9783;</button>
+        <button class="layout-btn" title="Single Row" onclick="setLayout('layout-single',this)">&#8803;</button>
+        <button class="layout-btn" title="Masonry" onclick="setLayout('layout-masonry',this)">&#10697;</button>
+      </div>
+
+      <div class="admin-section-title">Photo Caption / Hover Labels</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">These labels appear when visitors hover over each gallery item.</p>
+      <div class="admin-field-group">
+        <label>Item 1 Label</label>
+        <input type="text" id="ed-overlay1" oninput="liveUpdate('sf-overlay1',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Item 2 Label</label>
+        <input type="text" id="ed-overlay2" oninput="liveUpdate('sf-overlay2',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Item 3 Label</label>
+        <input type="text" id="ed-overlay3" oninput="liveUpdate('sf-overlay3',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Item 4 Label</label>
+        <input type="text" id="ed-overlay4" oninput="liveUpdate('sf-overlay4',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Item 5 Label</label>
+        <input type="text" id="ed-overlay5" oninput="liveUpdate('sf-overlay5',this.value)">
+      </div>
+      <div class="admin-field-group">
+        <label>Item 6 Label</label>
+        <input type="text" id="ed-overlay6" oninput="liveUpdate('sf-overlay6',this.value)">
+      </div>
+      <button class="admin-save-btn" onclick="saveSection('gallery')">Save Our Work Section</button>
     </div>
 
     <!-- TAB: GALLERY -->
