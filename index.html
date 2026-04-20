@@ -510,6 +510,37 @@
   .admin-thumb-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); padding: 6px 8px; font-size: 10px; color: #ccc; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .admin-thumb-del { position: absolute; top: 6px; right: 6px; background: #c0392b; color: #fff; border: none; width: 24px; height: 24px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
   .admin-thumb:hover .admin-thumb-del { opacity: 1; }
+  .admin-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  .video-play-badge {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(46,138,62,0.9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff; pointer-events: none;
+  }
+  .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
+  .gallery-video-wrap { position: relative; width: 100%; height: 100%; cursor: pointer; }
+  .gallery-play-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(46,138,62,0.88); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #fff; transition: transform 0.2s, background 0.2s;
+    pointer-events: none;
+  }
+  .gallery-video-wrap:hover .gallery-play-btn { transform: translate(-50%,-50%) scale(1.1); background: var(--green); }
+  .gallery-video-modal {
+    display: none; position: fixed; inset: 0; z-index: 20000;
+    background: rgba(0,0,0,0.95); align-items: center; justify-content: center;
+  }
+  .gallery-video-modal.open { display: flex; }
+  .modal-inner { position: relative; max-width: 900px; width: 90%; }
+  .modal-inner video { width: 100%; max-height: 80vh; background: #000; }
+  .modal-close {
+    position: absolute; top: -40px; right: 0;
+    background: transparent; border: none; color: #fff;
+    font-size: 28px; cursor: pointer; line-height: 1;
+  }
   .admin-empty { grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
   .admin-save-btn { background: var(--green); color: #fff; border: none; padding: 16px 48px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%); }
   .admin-save-btn:hover { background: var(--green-bright); color: #0a0a0a; }
@@ -1126,9 +1157,10 @@ function closeAdmin() {
 function handleUpload(input) {
   const files = Array.from(input.files);
   files.forEach(file => {
+    const isVideo = file.type.startsWith('video/') || /\.(mov|mp4|avi)$/i.test(file.name);
     const reader = new FileReader();
     reader.onload = (e) => {
-      adminPhotos.push({ src: e.target.result, name: file.name });
+      adminPhotos.push({ src: e.target.result, name: file.name, type: isVideo ? 'video' : 'image' });
       renderAdminThumbs();
     };
     reader.readAsDataURL(file);
@@ -1143,14 +1175,15 @@ function removePhoto(idx) {
 
 function renderAdminThumbs() {
   const grid = document.getElementById('admin-thumbs');
-  const empty = document.getElementById('admin-empty-msg');
   const saved = JSON.parse(localStorage.getItem('sf_photos') || '[]');
   const all = [...saved, ...adminPhotos.filter(p => !saved.find(s => s.name === p.name))];
   if (all.length === 0) { grid.innerHTML = '<div class="admin-empty" id="admin-empty-msg">No photos uploaded yet.</div>'; return; }
   grid.innerHTML = all.map((p, i) => `
     <div class="admin-thumb">
-      <img src="${p.src}" alt="${p.name}">
-      <div class="admin-thumb-label">${p.name}</div>
+      ${p.type === 'video'
+        ? `<video src="${p.src}" muted preload="metadata"></video><div class="video-play-badge">&#9654;</div>`
+        : `<img src="${p.src}" alt="${p.name}">`}
+      <div class="admin-thumb-label">${p.type === 'video' ? '&#127916; ' : '&#128247; '}${p.name}</div>
       <button class="admin-thumb-del" onclick="deletePhoto(${i})" title="Remove">&#10005;</button>
     </div>
   `).join('');
@@ -1177,15 +1210,42 @@ function applyToGallery() {
 
 function updateLiveGallery(photos) {
   const items = document.querySelectorAll('.gallery-item');
-  photos.forEach((photo, i) => {
+  photos.forEach((media, i) => {
     if (i < items.length) {
-      items[i].style.backgroundImage = 'url(' + photo.src + ')';
-      items[i].style.backgroundSize = 'cover';
-      items[i].style.backgroundPosition = 'center';
       const ph = items[i].querySelector('.gallery-placeholder');
       if (ph) ph.style.display = 'none';
+      if (media.type === 'video') {
+        items[i].style.backgroundImage = '';
+        if (!items[i].querySelector('.gallery-video-wrap')) {
+          items[i].innerHTML = `
+            <div class="gallery-video-wrap" onclick="openVideoModal('${media.src}')">
+              <video src="${media.src}" muted preload="metadata"></video>
+              <div class="gallery-play-btn">&#9654;</div>
+            </div>
+            <div class="gallery-overlay"><div class="gallery-overlay-text">&#127916; Play Video</div></div>`;
+        }
+      } else {
+        items[i].style.backgroundImage = 'url(' + media.src + ')';
+        items[i].style.backgroundSize = 'cover';
+        items[i].style.backgroundPosition = 'center';
+      }
     }
   });
+}
+
+function openVideoModal(src) {
+  const modal = document.getElementById('video-modal');
+  const vid = document.getElementById('modal-video');
+  vid.src = src;
+  modal.classList.add('open');
+  vid.play();
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('video-modal');
+  const vid = document.getElementById('modal-video');
+  vid.pause(); vid.src = '';
+  modal.classList.remove('open');
 }
 
 // Load saved content and photos on page start
@@ -1373,10 +1433,10 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
     <div class="admin-tab-content" id="tab-gallery">
       <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Upload photos and they will appear live in your gallery.</p>
       <div class="admin-upload-zone" onclick="document.getElementById('photo-upload').click()">
-        <input type="file" id="photo-upload" accept="image/*" multiple onchange="handleUpload(this)">
+        <input type="file" id="photo-upload" accept="image/*,video/mp4,video/quicktime,video/x-msvideo,.mov,.mp4,.avi" multiple onchange="handleUpload(this)">
         <div class="upload-icon">&#128247;</div>
         <div class="upload-text">Click to upload photos</div>
-        <div class="upload-sub">JPG, PNG, WEBP &bull; Multiple files ok</div>
+        <div class="upload-sub">JPG, PNG, WEBP, MP4, MOV, AVI &bull; Multiple files ok</div>
       </div>
       <div class="admin-gallery-grid" id="admin-thumbs">
         <div class="admin-empty" id="admin-empty-msg">No photos uploaded yet.</div>
@@ -1389,5 +1449,12 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
 
 <div class="admin-toast" id="admin-toast"></div>
 
+<!-- VIDEO MODAL -->
+<div class="gallery-video-modal" id="video-modal" onclick="closeVideoModal()">
+  <div class="modal-inner" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeVideoModal()">&#10005;</button>
+    <video id="modal-video" controls playsinline></video>
+  </div>
+</div>
 </body>
 </html>
