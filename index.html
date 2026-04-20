@@ -1255,6 +1255,165 @@ function closeVideoModal() {
   if (saved.length) updateLiveGallery(saved);
 })();
 
+// ---- VIDEO LINK MANAGER ----
+function getVideoEmbed(url) {
+  // YouTube
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) {
+    const id = ytMatch[1];
+    return {
+      id, platform: 'youtube',
+      embedUrl: 'https://www.youtube.com/embed/' + id + '?autoplay=1',
+      thumbUrl: 'https://img.youtube.com/vi/' + id + '/hqdefault.jpg',
+      label: 'YouTube'
+    };
+  }
+  // Vimeo
+  const vmMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vmMatch) {
+    const id = vmMatch[1];
+    return {
+      id, platform: 'vimeo',
+      embedUrl: 'https://player.vimeo.com/video/' + id + '?autoplay=1',
+      thumbUrl: '', // fetched async below
+      label: 'Vimeo'
+    };
+  }
+  return null;
+}
+
+function addVideoLink() {
+  const input = document.getElementById('video-url-input');
+  const errEl = document.getElementById('video-url-error');
+  const url = input.value.trim();
+  const embed = getVideoEmbed(url);
+  if (!embed) { errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+
+  const savedVideos = JSON.parse(localStorage.getItem('sf_videos') || '[]');
+  if (savedVideos.find(v => v.id === embed.id)) {
+    showToast('This video is already in your gallery!'); return;
+  }
+
+  if (embed.platform === 'vimeo') {
+    // Fetch Vimeo thumbnail via oEmbed
+    fetch('https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url))
+      .then(r => r.json())
+      .then(data => {
+        embed.thumbUrl = data.thumbnail_url || '';
+        embed.title = data.title || 'Vimeo Video';
+        saveAndRenderVideo(embed, savedVideos);
+      }).catch(() => {
+        embed.thumbUrl = '';
+        saveAndRenderVideo(embed, savedVideos);
+      });
+  } else {
+    embed.title = 'YouTube Video';
+    saveAndRenderVideo(embed, savedVideos);
+  }
+  input.value = '';
+}
+
+function saveAndRenderVideo(embed, savedVideos) {
+  savedVideos.push(embed);
+  localStorage.setItem('sf_videos', JSON.stringify(savedVideos));
+  renderAdminVideoList();
+  showToast('\u2713 Video added! Click Apply to show in gallery.');
+}
+
+function deleteVideo(id) {
+  let savedVideos = JSON.parse(localStorage.getItem('sf_videos') || '[]');
+  savedVideos = savedVideos.filter(v => v.id !== id);
+  localStorage.setItem('sf_videos', JSON.stringify(savedVideos));
+  renderAdminVideoList();
+  showToast('Video removed.');
+}
+
+function renderAdminVideoList() {
+  const list = document.getElementById('admin-video-list');
+  const empty = document.getElementById('admin-video-empty');
+  const savedVideos = JSON.parse(localStorage.getItem('sf_videos') || '[]');
+  if (savedVideos.length === 0) {
+    list.innerHTML = '<div id="admin-video-empty" style="color:var(--muted);font-size:13px;padding:20px 0;">No videos added yet. Paste a link above!</div>';
+    return;
+  }
+  list.innerHTML = savedVideos.map(v => `
+    <div style="display:flex;align-items:center;gap:16px;background:#0d0d0d;border:1px solid var(--border);padding:12px;">
+      <div style="width:80px;height:52px;background:#1a1a1a;overflow:hidden;flex-shrink:0;position:relative;">
+        ${v.thumbUrl ? `<img src="${v.thumbUrl}" style="width:100%;height:100%;object-fit:cover;">` : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--green-bright);font-size:20px;">&#127916;</div>'}
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+          <div style="width:24px;height:24px;border-radius:50%;background:rgba(46,138,62,0.85);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;">&#9654;</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:600;color:#ccc;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${v.title || v.label + ' Video'}</div>
+        <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">${v.label}</div>
+      </div>
+      <button onclick="deleteVideo('${v.id}')" style="background:#c0392b;color:#fff;border:none;padding:6px 12px;cursor:pointer;font-size:11px;font-family:'Montserrat',sans-serif;letter-spacing:1px;">Remove</button>
+    </div>
+  `).join('');
+}
+
+function applyVideosToGallery() {
+  const savedVideos = JSON.parse(localStorage.getItem('sf_videos') || '[]');
+  if (savedVideos.length === 0) { showToast('No videos to apply yet!'); return; }
+  applyVideosToPage(savedVideos);
+  showToast('\u2713 ' + savedVideos.length + ' video(s) applied to gallery!');
+}
+
+function applyVideosToPage(videos) {
+  const items = document.querySelectorAll('.gallery-item');
+  const photos = JSON.parse(localStorage.getItem('sf_photos') || '[]');
+  const totalPhotos = photos.length;
+  videos.forEach((v, i) => {
+    const idx = totalPhotos + i;
+    if (idx < items.length) {
+      const ph = items[idx].querySelector('.gallery-placeholder');
+      if (ph) ph.style.display = 'none';
+      items[idx].innerHTML = `
+        <div class="gallery-video-wrap" onclick="openEmbedModal('${v.embedUrl}')">
+          ${v.thumbUrl ? `<img src="${v.thumbUrl}" style="width:100%;height:100%;object-fit:cover;display:block;">` : '<div style=\"width:100%;height:100%;background:#0d1a0f;\"></div>'}
+          <div class="gallery-play-btn">&#9654;</div>
+        </div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">&#127916; ${v.label} &mdash; Play</div></div>`;
+    }
+  });
+}
+
+function openEmbedModal(embedUrl) {
+  const modal = document.getElementById('video-modal');
+  const vid = document.getElementById('modal-video');
+  // Replace video element with iframe for YouTube/Vimeo
+  vid.style.display = 'none';
+  let iframe = document.getElementById('modal-iframe');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = 'modal-iframe';
+    iframe.style.cssText = 'width:100%;height:500px;border:none;';
+    iframe.allow = 'autoplay; fullscreen';
+    vid.parentNode.insertBefore(iframe, vid);
+  }
+  iframe.src = embedUrl;
+  iframe.style.display = 'block';
+  modal.classList.add('open');
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('video-modal');
+  const vid = document.getElementById('modal-video');
+  vid.pause(); vid.src = '';
+  const iframe = document.getElementById('modal-iframe');
+  if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
+  modal.classList.remove('open');
+}
+
+// Load videos on page start
+(function() {
+  const savedVideos = JSON.parse(localStorage.getItem('sf_videos') || '[]');
+  if (savedVideos.length) applyVideosToPage(savedVideos);
+  renderAdminVideoList();
+})();
+
 // Open admin via URL hash
 if (window.location.hash === '#admin') openAdmin();
 window.addEventListener('hashchange', () => { if (window.location.hash === '#admin') openAdmin(); });
@@ -1290,6 +1449,7 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
       <button class="admin-tab" onclick="switchTab('tab-services')">Services</button>
       <button class="admin-tab" onclick="switchTab('tab-contact')">Contact Info</button>
       <button class="admin-tab" onclick="switchTab('tab-gallery')">Gallery Photos</button>
+      <button class="admin-tab" onclick="switchTab('tab-videos')">&#127916; Videos</button>
     </div>
 
     <!-- TAB: HERO -->
@@ -1442,6 +1602,26 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
         <div class="admin-empty" id="admin-empty-msg">No photos uploaded yet.</div>
       </div>
       <button class="admin-save-btn" onclick="applyToGallery()">Apply to Gallery</button>
+    </div>
+
+    <!-- TAB: VIDEOS -->
+    <div class="admin-tab-content" id="tab-videos">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Paste YouTube or Vimeo links below. They will appear in your gallery as thumbnails with a play button — no file size limits!</p>
+
+      <div class="admin-field-group">
+        <label>Paste YouTube or Vimeo URL</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="video-url-input" placeholder="https://www.youtube.com/watch?v=..." style="flex:1;">
+          <button class="admin-save-btn" style="clip-path:none;padding:12px 24px;white-space:nowrap;" onclick="addVideoLink()">Add Video</button>
+        </div>
+        <div id="video-url-error" style="color:#e74c3c;font-size:12px;margin-top:8px;display:none;">Please enter a valid YouTube or Vimeo URL.</div>
+      </div>
+
+      <div class="admin-section-title" style="margin-top:8px;">Your Videos</div>
+      <div id="admin-video-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px;">
+        <div id="admin-video-empty" style="color:var(--muted);font-size:13px;padding:20px 0;">No videos added yet. Paste a link above!</div>
+      </div>
+      <button class="admin-save-btn" onclick="applyVideosToGallery()">Apply Videos to Gallery</button>
     </div>
 
   </div>
