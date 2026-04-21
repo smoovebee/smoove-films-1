@@ -1447,27 +1447,40 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
 
 // ---- DOWNLOAD UPDATED SITE ----
 function downloadUpdatedSite() {
-  showToast('Preparing your updated site...');
-  const savedContent = JSON.parse(localStorage.getItem('sf_content') || '{}');
-  const savedPhotos = JSON.parse(localStorage.getItem('sf_photos') || '[]');
-  const savedVideos = JSON.parse(localStorage.getItem('sf_videos') || '[]');
-  const savedLayout = localStorage.getItem('sf_gallery_layout') || '';
-  const injectScript = '\n<script id="sf-baked-data">\n(function() {\n' +
-    '  var d = ' + JSON.stringify({content: savedContent, photos: savedPhotos, videos: savedVideos, layout: savedLayout}) + ';\n' +
-    "  if (Object.keys(d.content).length) localStorage.setItem('sf_content', JSON.stringify(d.content));\n" +
-    "  if (d.photos.length) localStorage.setItem('sf_photos', JSON.stringify(d.photos));\n" +
-    "  if (d.videos.length) localStorage.setItem('sf_videos', JSON.stringify(d.videos));\n" +
-    "  if (d.layout) localStorage.setItem('sf_gallery_layout', d.layout);\n" +
-    "})();\n<\/script>";
-  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-  html = html.replace('</head>', injectScript + '\n</head>');
-  const blob = new Blob([html], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'index.html';
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
-  setTimeout(() => showToast('Downloaded! Upload index.html to GitHub.'), 600);
+  // Close admin panel and login overlay first so they don't appear in the download
+  document.getElementById('admin-overlay').classList.remove('open');
+  document.getElementById('admin-login').classList.remove('open');
+
+  // Small delay to let the DOM update before capturing
+  setTimeout(() => {
+    const savedContent = JSON.parse(localStorage.getItem('sf_content') || '{}');
+    const savedPhotos = JSON.parse(localStorage.getItem('sf_photos') || '[]');
+    const savedVideos = JSON.parse(localStorage.getItem('sf_videos') || '[]');
+    const savedLayout = localStorage.getItem('sf_gallery_layout') || '';
+    const injectScript = '\n<script id="sf-baked-data">\n(function() {\n' +
+      '  var d = ' + JSON.stringify({content: savedContent, photos: savedPhotos, videos: savedVideos, layout: savedLayout}) + ';\n' +
+      "  if (Object.keys(d.content).length) localStorage.setItem('sf_content', JSON.stringify(d.content));\n" +
+      "  if (d.photos.length) localStorage.setItem('sf_photos', JSON.stringify(d.photos));\n" +
+      "  if (d.videos.length) localStorage.setItem('sf_videos', JSON.stringify(d.videos));\n" +
+      "  if (d.layout) localStorage.setItem('sf_gallery_layout', d.layout);\n" +
+      "})();\n<\/script>";
+    let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    html = html.replace('</head>', injectScript + '\n</head>');
+    // Strip the open class from admin overlay in the HTML string just in case
+    html = html.replace('id="admin-overlay" class="open"', 'id="admin-overlay"');
+    html = html.replace('id="admin-login" class="open"', 'id="admin-login"');
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'index.html';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    // Reopen admin after download
+    setTimeout(() => {
+      document.getElementById('admin-overlay').classList.add('open');
+      showToast('✓ Downloaded! Upload index.html to GitHub.');
+    }, 400);
+  }, 300);
 }
 </script>
 
