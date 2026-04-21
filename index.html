@@ -690,55 +690,55 @@
     <div class="section-title fade-up">MOMENTS <span>CAPTURED</span></div>
     <div class="divider fade-up"></div>
     <div class="gallery-filter fade-up">
-      <button class="filter-btn active">All</button>
-      <button class="filter-btn">Weddings</button>
-      <button class="filter-btn">Events</button>
-      <button class="filter-btn">Portraits</button>
-      <button class="filter-btn">Video</button>
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="weddings">Weddings</button>
+      <button class="filter-btn" data-filter="events">Events</button>
+      <button class="filter-btn" data-filter="portraits">Portraits</button>
+      <button class="filter-btn" data-filter="video">Video</button>
     </div>
     <div class="gallery-grid fade-up">
       <!-- REPLACE background-image with your actual photos: style="background-image:url('your-photo.jpg');background-size:cover;background-position:center;" -->
-      <div class="gallery-item" style="background: linear-gradient(135deg, #0d1a0f, #1a3d1f);">
+      <div class="gallery-item" data-category="weddings" style="background: linear-gradient(135deg, #0d1a0f, #1a3d1f);">
         <div class="gallery-placeholder">
           <div class="gallery-label">FEATURED WEDDING</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay1">The Johnson Wedding — 2024</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" data-category="weddings" id="sf-overlay1">The Johnson Wedding — 2024</div></div>
       </div>
-      <div class="gallery-item" style="background: linear-gradient(135deg, #0f1a11, #162b1a);">
+      <div class="gallery-item" data-category="portraits" style="background: linear-gradient(135deg, #0f1a11, #162b1a);">
         <div class="gallery-placeholder">
           <div class="gallery-label">PORTRAIT</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay2">Bridal Portraits</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" data-category="portraits" id="sf-overlay2">Bridal Portraits</div></div>
       </div>
-      <div class="gallery-item" style="background: linear-gradient(135deg, #0a1a0c, #1f4025);">
+      <div class="gallery-item" data-category="weddings" style="background: linear-gradient(135deg, #0a1a0c, #1f4025);">
         <div class="gallery-placeholder">
           <div class="gallery-label">CEREMONY</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay3">Ceremony Highlights</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" data-category="weddings" id="sf-overlay3">Ceremony Highlights</div></div>
       </div>
-      <div class="gallery-item" style="background: linear-gradient(135deg, #0d1f0f, #163820);">
+      <div class="gallery-item" data-category="weddings" style="background: linear-gradient(135deg, #0d1f0f, #163820);">
         <div class="gallery-placeholder">
           <div class="gallery-label">RECEPTION</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay4">Reception Vibes</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" data-category="weddings" id="sf-overlay4">Reception Vibes</div></div>
       </div>
-      <div class="gallery-item" style="background: linear-gradient(135deg, #0a1a0c, #1a3020);">
+      <div class="gallery-item" data-category="video" style="background: linear-gradient(135deg, #0a1a0c, #1a3020);">
         <div class="gallery-placeholder">
           <div class="gallery-label">CINEMATIC REEL</div>
           <div class="gallery-sub">ADD YOUR VIDEO THUMBNAIL HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay5">Watch Highlight Reel</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" data-category="video" id="sf-overlay5">Watch Highlight Reel</div></div>
       </div>
-      <div class="gallery-item" style="background: linear-gradient(135deg, #111f13, #1a3520);">
+      <div class="gallery-item" data-category="events" style="background: linear-gradient(135deg, #111f13, #1a3520);">
         <div class="gallery-placeholder">
           <div class="gallery-label">DETAILS</div>
           <div class="gallery-sub">ADD YOUR PHOTO HERE</div>
         </div>
-        <div class="gallery-overlay"><div class="gallery-overlay-text" id="sf-overlay6">The Little Details</div></div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text" data-category="events" id="sf-overlay6">The Little Details</div></div>
       </div>
     </div>
   </div>
@@ -981,6 +981,15 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    const filter = btn.getAttribute('data-filter');
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      const cat = item.getAttribute('data-category') || 'all';
+      if (filter === 'all' || cat === filter) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
   });
 });
 
@@ -1122,6 +1131,7 @@ function openAdmin() {
   if (sessionStorage.getItem('sf_admin') === '1') {
     document.getElementById('admin-overlay').classList.add('open');
     loadCurrentContent();
+    loadSavedCategories();
     renderAdminThumbs();
   } else {
     document.getElementById('admin-login').classList.add('open');
@@ -1246,9 +1256,35 @@ function closeVideoModal() {
 // Load saved content and photos on page start
 (function() {
   restoreSavedContent();
+  loadSavedCategories();
   const saved = JSON.parse(localStorage.getItem('sf_photos') || '[]');
   if (saved.length) updateLiveGallery(saved);
 })();
+
+// ---- GALLERY CATEGORY ----
+function updateItemCategory(itemNum, category) {
+  // Find gallery items and update data-category
+  const items = document.querySelectorAll('.gallery-item');
+  if (items[itemNum - 1]) {
+    items[itemNum - 1].setAttribute('data-category', category);
+  }
+  // Save to localStorage
+  const cats = JSON.parse(localStorage.getItem('sf_categories') || '{}');
+  cats['item' + itemNum] = category;
+  localStorage.setItem('sf_categories', JSON.stringify(cats));
+}
+
+function loadSavedCategories() {
+  const cats = JSON.parse(localStorage.getItem('sf_categories') || '{}');
+  const items = document.querySelectorAll('.gallery-item');
+  Object.entries(cats).forEach(([key, cat]) => {
+    const idx = parseInt(key.replace('item','')) - 1;
+    if (items[idx]) items[idx].setAttribute('data-category', cat);
+    // Update admin selects if open
+    const sel = document.getElementById('ed-cat' + (idx+1));
+    if (sel) sel.value = cat;
+  });
+}
 
 // ---- GALLERY LAYOUT & HEADER ----
 function liveGalleryTitle() {
