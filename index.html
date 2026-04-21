@@ -604,6 +604,24 @@
   .layout-btn.active, .layout-btn:hover { background: var(--green); color: #fff; border-color: var(--green); }
   .layout-btns { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
   .layout-btns span { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-right: 8px; }
+
+  /* DOWNLOAD BUTTON */
+  .admin-download-bar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--green-dark); border-bottom: 2px solid var(--green);
+    padding: 14px 24px; margin: -40px -24px 32px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .admin-download-bar p { font-size: 12px; color: rgba(255,255,255,0.8); letter-spacing: 0.5px; }
+  .admin-download-bar p span { color: var(--green-bright); font-weight: 700; }
+  .btn-download {
+    background: #fff; color: #0a0a0a; border: none;
+    padding: 12px 28px; font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .btn-download:hover { background: var(--green-bright); }
 </style>
 </head>
 <body>
@@ -1425,6 +1443,32 @@ function closeVideoModal() {
 if (window.location.hash === '#admin') openAdmin();
 window.addEventListener('hashchange', () => { if (window.location.hash === '#admin') openAdmin(); });
 
+
+
+// ---- DOWNLOAD UPDATED SITE ----
+function downloadUpdatedSite() {
+  showToast('Preparing your updated site...');
+  const savedContent = JSON.parse(localStorage.getItem('sf_content') || '{}');
+  const savedPhotos = JSON.parse(localStorage.getItem('sf_photos') || '[]');
+  const savedVideos = JSON.parse(localStorage.getItem('sf_videos') || '[]');
+  const savedLayout = localStorage.getItem('sf_gallery_layout') || '';
+  const injectScript = '\n<script id="sf-baked-data">\n(function() {\n' +
+    '  var d = ' + JSON.stringify({content: savedContent, photos: savedPhotos, videos: savedVideos, layout: savedLayout}) + ';\n' +
+    "  if (Object.keys(d.content).length) localStorage.setItem('sf_content', JSON.stringify(d.content));\n" +
+    "  if (d.photos.length) localStorage.setItem('sf_photos', JSON.stringify(d.photos));\n" +
+    "  if (d.videos.length) localStorage.setItem('sf_videos', JSON.stringify(d.videos));\n" +
+    "  if (d.layout) localStorage.setItem('sf_gallery_layout', d.layout);\n" +
+    "})();\n<\/script>";
+  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  html = html.replace('</head>', injectScript + '\n</head>');
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'index.html';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  setTimeout(() => showToast('Downloaded! Upload index.html to GitHub.'), 600);
+}
 </script>
 
 <!-- ADMIN LOGIN -->
@@ -1442,6 +1486,12 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
 <!-- ADMIN PANEL -->
 <div id="admin-overlay">
   <div class="admin-wrap">
+    <!-- DOWNLOAD BAR -->
+    <div class="admin-download-bar">
+      <p>✏️ Made changes? <span>Download your updated site</span> and upload it to GitHub to make them permanent for all visitors.</p>
+      <button class="btn-download" onclick="downloadUpdatedSite()">⬇ Download Updated Site</button>
+    </div>
+
     <div class="admin-header">
       <img src="SmooveFilms_Logo_Refined.JPEG" class="admin-logo" alt="Smoove Films">
       <div class="admin-title">Admin Panel <span class="preview-badge">Live Preview</span></div>
