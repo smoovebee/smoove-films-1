@@ -1503,84 +1503,76 @@ window.addEventListener('hashchange', () => { if (window.location.hash === '#adm
 
 // ---- DOWNLOAD UPDATED SITE ----
 function downloadUpdatedSite() {
-  // Close admin panel first
+  // Close admin panel first so it doesn't appear in the HTML
   document.getElementById('admin-overlay').classList.remove('open');
   document.getElementById('admin-login').classList.remove('open');
 
   setTimeout(() => {
-    // Pull all saved data
+    // Pull all saved data from localStorage
     const savedContent = JSON.parse(localStorage.getItem('sf_content') || '{}');
     const savedPhotos  = JSON.parse(localStorage.getItem('sf_photos')  || '[]');
     const savedVideos  = JSON.parse(localStorage.getItem('sf_videos')  || '[]');
     const savedLayout  = localStorage.getItem('sf_gallery_layout') || '';
     const savedCats    = JSON.parse(localStorage.getItem('sf_categories') || '{}');
 
-    // Start with the live DOM
+    // STEP 1: Apply all saved content directly to the live DOM first
+    // This ensures outerHTML captures the real current state
+    Object.entries(savedContent).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    });
+
+    // Apply photos to gallery items in DOM
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    savedPhotos.forEach((photo, i) => {
+      if (galleryItems[i]) {
+        galleryItems[i].style.backgroundImage = 'url(' + photo.src + ')';
+        galleryItems[i].style.backgroundSize = 'cover';
+        galleryItems[i].style.backgroundPosition = 'center';
+        const ph = galleryItems[i].querySelector('.gallery-placeholder');
+        if (ph) ph.style.display = 'none';
+      }
+    });
+
+    // Apply categories
+    Object.entries(savedCats).forEach(([key, cat]) => {
+      const idx = parseInt(key.replace('item', '')) - 1;
+      if (galleryItems[idx]) galleryItems[idx].setAttribute('data-category', cat);
+    });
+
+    // Apply layout
+    if (savedLayout) {
+      const grid = document.getElementById('gallery-grid');
+      if (grid) {
+        grid.classList.remove('layout-3col','layout-2col','layout-single','layout-masonry');
+        grid.classList.add(savedLayout);
+      }
+    }
+
+    // STEP 2: Now capture the DOM — everything is baked in
     let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 
-    // 1. Bake text content — replace innerHTML of every sf- element directly in the HTML string
-    Object.entries(savedContent).forEach(([id, val]) => {
-      // Replace content between the id tag and its closing tag
-      const escaped = val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp('(id="' + id + '"(?:[^>]*)>)([\\s\\S]*?)(<\/)', 'g');
-      html = html.replace(regex, (match, open, inner, close) => open + val + close);
-    });
+    // STEP 3: Clean up — remove admin open states from HTML string
+    html = html.replace(/(<div id="admin-overlay"[^>]*?)\bopen\b/g, '$1');
+    html = html.replace(/(<div id="admin-login"[^>]*?)\bopen\b/g, '$1');
 
-    // 2. Bake gallery layout class
-    if (savedLayout) {
-      html = html.replace(
-        /id="gallery-grid"([^>]*class="[^"]*)(layout-[a-z0-9]+)?/g,
-        (m, pre) => 'id="gallery-grid"' + pre + savedLayout
-      );
-    }
+    // STEP 4: Remove any existing bootstrap script to avoid duplicates
+    html = html.replace(/<script id="sf-bootstrap">[\s\S]*?<\/script>/, '');
 
-    // 3. Bake gallery item categories
-    Object.entries(savedCats).forEach(([key, cat]) => {
-      const idx = parseInt(key.replace('item',''));
-      // Replace data-category on nth gallery-item
-      let count = 0;
-      html = html.replace(/(<div class="gallery-item"[^>]*data-category=")[^"]*"/g, (match) => {
-        count++;
-        if (count === idx) return match.replace(/data-category="[^"]*"/, 'data-category="' + cat + '"');
-        return match;
-      });
-    });
-
-    // 4. Bake photos into gallery items
-    if (savedPhotos.length) {
-      savedPhotos.forEach((photo, i) => {
-        let count = 0;
-        html = html.replace(/<div class="gallery-item"([^>]*)>/g, (match, attrs) => {
-          count++;
-          if (count === i + 1) {
-            const newAttrs = attrs
-              .replace(/style="[^"]*"/, '')
-              .replace(/background-image:[^;]*;?/g, '');
-            return '<div class="gallery-item"' + newAttrs + ' style="background-image:url(' + photo.src + ');background-size:cover;background-position:center;">';
-          }
-          return match;
-        });
-      });
-    }
-
-    // 5. Remove admin overlay open states
-    html = html.replace(/id="admin-overlay" class="([^"]*\s*)?open(\s*[^"]*)"/g, 'id="admin-overlay" class=""');
-    html = html.replace(/id="admin-login" class="([^"]*\s*)?open(\s*[^"]*)"/g, 'id="admin-login" class=""');
-
-    // 6. Inject a tiny bootstrap script so localStorage is also seeded on first load
+    // STEP 5: Inject bootstrap BEFORE </head> so localStorage is seeded for admin panel use
     const bootstrap = '<script id="sf-bootstrap">' +
       '(function(){' +
-      'var d=' + JSON.stringify({c: savedContent, p: savedPhotos, v: savedVideos, l: savedLayout, cats: savedCats}) + ';' +
-      "if(Object.keys(d.c).length)localStorage.setItem('sf_content',JSON.stringify(d.c));" +
-      "if(d.p.length)localStorage.setItem('sf_photos',JSON.stringify(d.p));" +
-      "if(d.v.length)localStorage.setItem('sf_videos',JSON.stringify(d.v));" +
-      "if(d.l)localStorage.setItem('sf_gallery_layout',d.l);" +
-      "if(Object.keys(d.cats).length)localStorage.setItem('sf_categories',JSON.stringify(d.cats));" +
+        'var d=' + JSON.stringify({c:savedContent,p:savedPhotos,v:savedVideos,l:savedLayout,cats:savedCats}) + ';' +
+        "localStorage.setItem('sf_content',JSON.stringify(d.c));" +
+        "localStorage.setItem('sf_photos',JSON.stringify(d.p));" +
+        "localStorage.setItem('sf_videos',JSON.stringify(d.v));" +
+        "if(d.l)localStorage.setItem('sf_gallery_layout',d.l);" +
+        "localStorage.setItem('sf_categories',JSON.stringify(d.cats));" +
       '})();' +
-      '<\/script>';
-    html = html.replace('</head>', bootstrap + '</head>');
+    '<\/script>';
+    html = html.replace('</head>', bootstrap + '\n</head>');
 
-    // Trigger download
+    // STEP 6: Trigger download
     const blob = new Blob([html], { type: 'text/html' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
@@ -1589,12 +1581,12 @@ function downloadUpdatedSite() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    // Re-open admin
+    // Re-open admin panel
     setTimeout(() => {
       document.getElementById('admin-overlay').classList.add('open');
-      showToast('✓ Downloaded! Upload index.html to GitHub — changes will show everywhere.');
-    }, 400);
-  }, 300);
+      showToast('✓ Downloaded! Upload index.html to GitHub.');
+    }, 500);
+  }, 400);
 }
 </script>
 
