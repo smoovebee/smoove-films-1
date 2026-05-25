@@ -1018,38 +1018,60 @@ async function submitForm(e) {
   const btn = document.getElementById('submit-btn');
   const formId = 'mdayldqg'; // Smoove Films Formspree ID
 
-  const data = {
-    firstName: document.getElementById('contact-firstname') ? document.getElementById('contact-firstname').value : '',
-    lastName: document.getElementById('contact-lastname') ? document.getElementById('contact-lastname').value : '',
-    email: document.getElementById('contact-email') ? document.getElementById('contact-email').value : '',
-    phone: document.getElementById('contact-phone') ? document.getElementById('contact-phone').value : '',
-    date: document.getElementById('contact-date') ? document.getElementById('contact-date').value : '',
-    service: document.getElementById('contact-service') ? document.getElementById('contact-service').value : '',
-    message: document.getElementById('contact-message') ? document.getElementById('contact-message').value : '',
-  };
+  const firstName = document.getElementById('contact-firstname') ? document.getElementById('contact-firstname').value.trim() : '';
+  const lastName  = document.getElementById('contact-lastname')  ? document.getElementById('contact-lastname').value.trim()  : '';
+  const email     = document.getElementById('contact-email')     ? document.getElementById('contact-email').value.trim()     : '';
+  const phone     = document.getElementById('contact-phone')     ? document.getElementById('contact-phone').value.trim()     : '';
+  const date      = document.getElementById('contact-date')      ? document.getElementById('contact-date').value             : '';
+  const service   = document.getElementById('contact-service')   ? document.getElementById('contact-service').value          : '';
+  const message   = document.getElementById('contact-message')   ? document.getElementById('contact-message').value.trim()   : '';
 
-  if (!data.email) { alert('Please enter your email address.'); return; }
+  if (!email) { alert('Please enter your email address.'); return; }
+  if (!firstName) { alert('Please enter your first name.'); return; }
 
   btn.textContent = 'Sending...';
   btn.disabled = true;
 
   try {
+    // Use FormData instead of JSON for better Formspree compatibility
+    const formData = new FormData();
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
+    formData.append('email', email);
+    formData.append('phone', phone);
+    formData.append('date', date);
+    formData.append('service', service);
+    formData.append('message', message);
+
     const res = await fetch('https://formspree.io/f/' + formId, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(data)
+      headers: { 'Accept': 'application/json' },
+      body: formData
     });
+
+    const json = await res.json();
+
     if (res.ok) {
-      document.getElementById('form-success').style.display = 'block';
-      document.querySelector('.contact-form').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
-      btn.textContent = 'Sent!';
+      const successEl = document.getElementById('form-success');
+      if (successEl) successEl.style.display = 'block';
+      // Clear all contact form fields
+      ['contact-firstname','contact-lastname','contact-email','contact-phone','contact-date','contact-service','contact-message'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      btn.textContent = 'Sent! ✓';
+      setTimeout(() => {
+        btn.textContent = 'Send Inquiry →';
+        btn.disabled = false;
+      }, 4000);
     } else {
-      alert('Something went wrong. Please email us directly.');
+      const errMsg = json.errors ? json.errors.map(e => e.message).join(', ') : 'Submission failed.';
+      alert('Error: ' + errMsg + '\nPlease try again or email james@smoove-films.com directly.');
       btn.textContent = 'Send Inquiry →';
       btn.disabled = false;
     }
-  } catch {
-    alert('Network error. Please try again.');
+  } catch (err) {
+    alert('Network error. Please check your connection and try again.');
     btn.textContent = 'Send Inquiry →';
     btn.disabled = false;
   }
